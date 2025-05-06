@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-exchange-alt"></i> New Transaction
+            </h2>
+            <a href="/transactions" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Transactions
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/transactions}" method="post" th:object="${transaction}">
+                    <div class="mb-3">
+                        <label for="type" class="form-label">Transaction Type</label>
+                        <select class="form-select" id="type" th:field="*{type}" required>
+                            <option value="">Select Type</option>
+                            <option value="IN">Stock In</option>
+                            <option value="OUT">Stock Out</option>
+                        </select>
+                        <div class="text-danger" th:if="${#fields.hasErrors('type')}" th:errors="*{type}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="store" class="form-label">Store</label>
+                        <select class="form-select" id="store" th:field="*{store}" required>
+                            <option value="">Select Store</option>
+                            <option th:each="store : ${stores}" 
+                                    th:value="${store.id}" 
+                                    th:text="${store.name}"></option>
+                        </select>
+                        <div class="text-danger" th:if="${#fields.hasErrors('store')}" th:errors="*{store}"></div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            Products
+                        </div>
+                        <div class="card-body">
+                            <div id="productList">
+                                <div class="row mb-3" th:each="product, stat : ${products}">
+                                    <div class="col-md-6">
+                                        <select class="form-select" th:name="'products[' + ${stat.index} + '].id'" required>
+                                            <option value="">Select Product</option>
+                                            <option th:each="p : ${availableProducts}" 
+                                                    th:value="${p.id}" 
+                                                    th:text="${p.name + ' (Stock: ' + p.count + ')'}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="number" class="form-control" 
+                                               th:name="'products[' + ${stat.index} + '].quantity'" 
+                                               placeholder="Quantity" required min="1">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-danger remove-product">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" id="addProduct" class="btn btn-secondary">
+                                <i class="fas fa-plus"></i> Add Product
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Create Transaction
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const productList = document.getElementById('productList');
+            const addProductBtn = document.getElementById('addProduct');
+            let productCount = [[${products.size()}]];
+
+            addProductBtn.addEventListener('click', function() {
+                const allOptions = document.querySelector('select[name="products[0].id"]').options;
+                let optionsHtml = '<option value="">Select Product</option>';
+                
+                for (let i = 0; i < allOptions.length; i++) {
+                    if (allOptions[i].value) {
+                        optionsHtml += '<option value="' + allOptions[i].value + '">' + 
+                                      allOptions[i].text + '</option>';
+                    }
+                }
+                
+                const productHtml = `
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <select class="form-select" name="products[` + productCount + `].id" required>
+                                ` + optionsHtml + `
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="number" class="form-control" 
+                                   name="products[` + productCount + `].quantity" 
+                                   placeholder="Quantity" required min="1">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger remove-product">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                productList.insertAdjacentHTML('beforeend', productHtml);
+                productCount++;
+            });
+
+            productList.addEventListener('click', function(e) {
+                if (e.target.closest('.remove-product')) {
+                    e.target.closest('.row').remove();
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

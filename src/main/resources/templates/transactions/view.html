@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-exchange-alt"></i> Transaction Details
+            </h2>
+            <a href="/transactions" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Transactions
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Transaction Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th style="width: 150px;">Transaction ID:</th>
+                                <td th:text="${transaction.id}"></td>
+                            </tr>
+                            <tr>
+                                <th>Date:</th>
+                                <td th:text="${#temporals.format(transaction.date, 'yyyy-MM-dd HH:mm')}"></td>
+                            </tr>
+                            <tr>
+                                <th>Type:</th>
+                                <td>
+                                    <span th:if="${transaction.type.name() == 'IN'}" class="badge bg-success">Stock In</span>
+                                    <span th:if="${transaction.type.name() == 'OUT'}" class="badge bg-danger">Stock Out</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Store:</th>
+                                <td th:text="${transaction.store.name}"></td>
+                            </tr>
+                            <tr>
+                                <th>Store Address:</th>
+                                <td th:text="${transaction.store.address}"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Products</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="product : ${transaction.products}">
+                                    <td th:text="${product.key.name}"></td>
+                                    <td th:text="${product.value}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

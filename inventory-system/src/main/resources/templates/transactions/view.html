@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Transaction Details</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Transaction Details</h2>
+            <a href="/transactions" class="btn btn-secondary">Back to List</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${transaction.store.name + ' - ' + transaction.type}"></h5>
+                <p class="card-text">
+                    <strong>Date:</strong> 
+                    <span th:text="${#temporals.format(transaction.date, 'yyyy-MM-dd HH:mm')}"></span>
+                </p>
+                
+                <h6 class="mt-4">Products</h6>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="entry : ${transaction.products}">
+                                <td th:text="${entry.key.name}"></td>
+                                <td th:text="${entry.value}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
